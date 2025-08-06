@@ -28,7 +28,7 @@ export default function AboutSection() {
       >
         {/* Avatar */}
         <motion.div
-          className="w-40 h-40 relative rounded-full overflow-hidden border-2 border-highlight shadow-[0_0_20px_rgba(249,115,22,0.3)] shrink-0 hidden md:block"
+          className="w-40 h-40 relative rounded-full overflow-hidden border-2 border-highlight shadow-[0_0_20px_rgba(249,115,22,0.3)] shrink-0 mx-auto md:mx-0"
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
@@ -47,34 +47,23 @@ export default function AboutSection() {
         {/* Texto */}
         <div className="text-light/90 text-lg leading-[1.8] max-w-3xl">
           <p className="mb-4">
-            Sempre tive facilidade com tecnologia, mas foi em 2023 que mergulhei
-            de vez nesse universo ao iniciar o curso de Desenvolvimento de
-            Software Multiplataforma na FATEC de Itapira. Desde então, me
-            apaixonei por criar soluções digitais e venho trilhando minha
-            transição para a área de forma prática, organizada e determinada.
+            Em 2023, comecei o curso de Desenvolvimento de Software
+            Multiplataforma na FATEC Itapira e logo me apaixonei pela área.
+            Desde então, venho me preparando para atuar como desenvolvedor,
+            sempre com foco em prática, organização e aprendizado constante.
           </p>
 
           <p className="mb-4">
-            Apesar de ainda estar no último semestre da faculdade, já acumulo
-            experiências reais com desenvolvimento web, IoT e automações. Criei
-            uma estufa automatizada com ESP32, desenvolvi APIs e landing pages
-            modernas — incluindo um site completo para apartamentos em Ubatuba,
-            com domínio próprio e foco em SEO. Também participei da criação de
-            um app para eventos como projeto interdisciplinar.
-          </p>
-
-          <p className="mb-4">
-            Meu foco está no back-end e em projetos de automação, mas minha
-            maior força é a versatilidade: consigo aprender rápido, me adaptar a
-            diferentes demandas e organizar tudo de forma limpa e objetiva.
-            Entender os princípios de engenharia de software antes de começar um
-            projeto tem sido essencial na minha evolução.
+            Já desenvolvi projetos com IoT, APIs e landing pages modernas — como
+            um site completo para aluguel de apartamentos em Ubatuba, com
+            domínio próprio e SEO. Também participei da criação de um app para
+            eventos na faculdade.
           </p>
 
           <p>
-            Busco oportunidades que me ajudem a expandir minha experiência
-            profissional e alcançar meu objetivo: atuar como desenvolvedor full
-            stack remoto, explorar o mundo e viver com liberdade através da
+            Tenho interesse especial por back-end e automações, mas me destaco
+            pela versatilidade e adaptação rápida. Meu objetivo é trabalhar como
+            dev full stack e conquistar uma vida com mais liberdade através da
             tecnologia.
           </p>
         </div>
