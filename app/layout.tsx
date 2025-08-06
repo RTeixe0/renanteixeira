@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script"; // 👈 Adicionado aqui
 import "./globals.css";
 import { Inter, Orbitron, JetBrains_Mono } from "next/font/google";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
@@ -72,6 +73,24 @@ export default function RootLayout({
       className={`${inter.variable} ${orbitron.variable} ${jetbrains.variable}`}
     >
       <body className="bg-[#0d0d0d] text-[#f2f2f2] antialiased">
+        {/* Google Analytics Script */}
+        <Script
+          strategy="afterInteractive"
+          src="https://www.googletagmanager.com/gtag/js?id=G-K2J8S6DWC3"
+        />
+        <Script
+          id="gtag-init"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-K2J8S6DWC3');
+            `,
+          }}
+        />
+
         {children}
         <ScrollToTopButton />
       </body>

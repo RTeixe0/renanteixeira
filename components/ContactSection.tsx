@@ -2,8 +2,17 @@
 
 import { motion } from "framer-motion";
 import { Github, Linkedin, Mail, MessageCircle } from "lucide-react";
+import { gtagEvent } from "@/lib/gtag"; // 👈 importa a função
 
 export default function ContactSection() {
+  const handleClick = (channel: string) => {
+    gtagEvent({
+      action: `${channel.toLowerCase()}_click`,
+      category: "Contato",
+      label: `Botão ${channel}`,
+    });
+  };
+
   return (
     <section id="contato" className="py-24 px-4 max-w-3xl mx-auto text-center">
       <motion.h2
@@ -35,6 +44,7 @@ export default function ContactSection() {
         viewport={{ once: true }}
       >
         <a
+          onClick={() => handleClick("GitHub")}
           href="https://github.com/RTeixe0"
           target="_blank"
           rel="noopener noreferrer"
@@ -45,6 +55,7 @@ export default function ContactSection() {
         </a>
 
         <a
+          onClick={() => handleClick("LinkedIn")}
           href="https://www.linkedin.com/in/renaneteixeira/"
           target="_blank"
           rel="noopener noreferrer"
@@ -55,6 +66,7 @@ export default function ContactSection() {
         </a>
 
         <a
+          onClick={() => handleClick("Email")}
           href="mailto:renanteixeira338@hotmail.com"
           className="px-5 py-3 bg-dark border border-highlight text-highlight rounded-xl inline-flex items-center gap-2 hover:bg-highlight hover:text-dark transition"
         >
@@ -63,6 +75,7 @@ export default function ContactSection() {
         </a>
 
         <a
+          onClick={() => handleClick("WhatsApp")}
           href="https://wa.me/5519981286656?text=Olá%20Renan%2C%20vi%20seu%20portfólio%20e%20gostaria%20de%20conversar%20sobre%20um%20projeto."
           target="_blank"
           rel="noopener noreferrer"
