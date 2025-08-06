@@ -1,0 +1,18 @@
+{
+  "name": "Renan Teixeira — Full Stack Developer",
+  "short_name": "Renan Teixeira",
+  "description": "Portfólio profissional de Renan Teixeira com projetos, habilidades e contato.",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#0d0d0d",
+  "theme_color": "#f97316",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ],
+  "lang": "pt-BR"
+}

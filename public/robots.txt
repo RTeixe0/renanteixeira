@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://renanteixeira.dev
+
+# Sitemaps
+Sitemap: https://renanteixeira.dev/sitemap.xml
