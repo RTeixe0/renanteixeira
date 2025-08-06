@@ -25,7 +25,39 @@ const jetbrains = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Renan Teixeira — Full Stack Developer",
   description:
-    "Portfólio pessoal de Renan Teixeira com projetos, habilidades e contato.",
+    "Portfólio de Renan Teixeira, desenvolvedor full stack com experiência em web, automações e IoT.",
+  keywords: [
+    "Renan Teixeira",
+    "portfólio desenvolvedor",
+    "desenvolvedor full stack",
+    "programador Next.js",
+    "Tailwind CSS",
+    "IoT",
+    "React",
+    "dev remoto",
+  ],
+  authors: [{ name: "Renan Teixeira", url: "https://renanteixeira.dev" }],
+  metadataBase: new URL("https://renanteixeira.dev"),
+  openGraph: {
+    title: "Renan Teixeira — Desenvolvedor Full Stack",
+    description:
+      "Conheça o portfólio de Renan Teixeira, com projetos reais em web, automações e IoT.",
+    url: "https://renanteixeira.dev",
+    siteName: "Renan Teixeira",
+    locale: "pt_BR",
+    type: "website",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Renan Teixeira — Desenvolvedor Full Stack",
+      },
+    ],
+  },
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
