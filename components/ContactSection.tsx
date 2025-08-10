@@ -3,14 +3,18 @@
 import { motion } from "framer-motion";
 import { Github, Linkedin, Mail, MessageCircle } from "lucide-react";
 import { gtagEvent } from "@/lib/gtag";
+import { clarityEvent } from "@/lib/clarity"; // 👈 novo
 
 export default function ContactSection() {
   const track = (
     label: string,
-    action = "outbound_click",
+    action: "outbound_click" | "cta_click" = "outbound_click",
     category = "Contato"
   ) => {
+    // GA4
     gtagEvent({ action, category, label });
+    // Clarity (evento custom)
+    clarityEvent(`contato_${label.toLowerCase()}`);
   };
 
   return (
@@ -50,7 +54,6 @@ export default function ContactSection() {
           rel="noopener noreferrer"
           aria-label="Abrir GitHub"
           data-track="contato_github"
-          data-clarity-event="contato_github"
           onClick={() => track("GitHub")}
           className="px-5 py-3 bg-dark border border-highlight text-highlight rounded-xl inline-flex items-center gap-2 hover:bg-highlight hover:text-dark transition"
         >
@@ -65,7 +68,6 @@ export default function ContactSection() {
           rel="noopener noreferrer"
           aria-label="Abrir LinkedIn"
           data-track="contato_linkedin"
-          data-clarity-event="contato_linkedin"
           onClick={() => track("LinkedIn")}
           className="px-5 py-3 bg-dark border border-highlight text-highlight rounded-xl inline-flex items-center gap-2 hover:bg-highlight hover:text-dark transition"
         >
@@ -78,7 +80,6 @@ export default function ContactSection() {
           href="mailto:renanteixeira338@hotmail.com"
           aria-label="Enviar e-mail"
           data-track="contato_email"
-          data-clarity-event="contato_email"
           onClick={() => track("Email", "cta_click")}
           className="px-5 py-3 bg-dark border border-highlight text-highlight rounded-xl inline-flex items-center gap-2 hover:bg-highlight hover:text-dark transition"
         >
@@ -93,7 +94,6 @@ export default function ContactSection() {
           rel="noopener noreferrer"
           aria-label="Abrir WhatsApp"
           data-track="contato_whatsapp"
-          data-clarity-event="contato_whatsapp"
           onClick={() => track("WhatsApp")}
           className="px-5 py-3 bg-dark border border-highlight text-highlight rounded-xl inline-flex items-center gap-2 hover:bg-highlight hover:text-dark transition"
         >

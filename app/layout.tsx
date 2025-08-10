@@ -5,7 +5,8 @@ import "./globals.css";
 import { Inter, Orbitron, JetBrains_Mono } from "next/font/google";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
 import Tracker from "@/components/Tracker";
-import GA from "@/components/GA"; // 👈 componente que dispara page_view nas mudanças de rota
+import GA from "@/components/GA"; // dispara page_view nas mudanças de rota
+import ClarityInit from "@/components/ClarityInit"; // 👈 novo: inicializa Clarity via NPM
 import { Suspense } from "react";
 
 const inter = Inter({
@@ -79,17 +80,6 @@ function AnalyticsScripts() {
           gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}', { send_page_view: false });
         `}
       </Script>
-
-      {/* Microsoft Clarity */}
-      <Script id="clarity" strategy="afterInteractive">
-        {`
-          (function(c,l,a,r,i,t,y){
-            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-          })(window, document, "clarity", "script", "${process.env.NEXT_PUBLIC_CLARITY_ID}");
-        `}
-      </Script>
     </>
   );
 }
@@ -106,12 +96,16 @@ export default function RootLayout({
     >
       <body className="bg-[#0d0d0d] text-[#f2f2f2] antialiased">
         <AnalyticsScripts />
-        {/* Componentes que usam usePathname/useSearchParams devem estar em Suspense */}
+        {/* Componentes com hooks de navegação ficam em Suspense */}
         <Suspense fallback={null}>
           <GA />
         </Suspense>
         <Suspense fallback={null}>
           <Tracker />
+        </Suspense>
+        {/* Inicialização do Microsoft Clarity via NPM */}
+        <Suspense fallback={null}>
+          <ClarityInit />
         </Suspense>
         {children}
         <ScrollToTopButton />

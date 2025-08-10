@@ -2,10 +2,18 @@
 
 import { motion } from "framer-motion";
 import { gtagEvent } from "@/lib/gtag";
+import { clarityEvent } from "@/lib/clarity"; // 👈 Clarity via NPM
 
 export default function HeroSection() {
-  const track = (label: string, category = "Hero", action = "cta_click") => {
+  const track = (
+    label: string,
+    category = "Hero",
+    action: "cta_click" | "outbound_click" = "cta_click"
+  ) => {
+    // GA4
     gtagEvent({ action, category, label });
+    // Clarity (evento custom legível)
+    clarityEvent(`hero_${label.toLowerCase().replace(/\s+/g, "_")}`);
   };
 
   return (
@@ -52,7 +60,6 @@ export default function HeroSection() {
         <a
           href="#projetos"
           data-track="hero_ver_projetos"
-          data-clarity-event="hero_ver_projetos"
           onClick={() => track("Ver projetos")}
           className="px-6 py-3 rounded-xl bg-highlight text-dark font-semibold hover:scale-105 transition"
         >
@@ -65,7 +72,6 @@ export default function HeroSection() {
           target="_blank"
           rel="noopener noreferrer"
           data-track="hero_github"
-          data-clarity-event="hero_github"
           onClick={() => track("GitHub", "Hero", "outbound_click")}
           className="px-6 py-3 rounded-xl border border-highlight text-highlight hover:bg-highlight hover:text-dark transition inline-flex items-center gap-2"
         >
@@ -100,7 +106,6 @@ export default function HeroSection() {
           target="_blank"
           rel="noopener noreferrer"
           data-track="hero_linkedin"
-          data-clarity-event="hero_linkedin"
           onClick={() => track("LinkedIn", "Hero", "outbound_click")}
           className="px-6 py-3 rounded-xl border border-highlight text-highlight hover:bg-highlight hover:text-dark transition inline-flex items-center gap-2"
         >
