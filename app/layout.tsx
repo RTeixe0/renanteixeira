@@ -6,7 +6,6 @@ import { Inter, Orbitron, JetBrains_Mono } from "next/font/google";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
 import Tracker from "@/components/Tracker";
 import GA from "@/components/GA"; // dispara page_view nas mudanças de rota
-import ClarityInit from "@/components/ClarityInit"; // 👈 novo: inicializa Clarity via NPM
 import { Suspense } from "react";
 
 const inter = Inter({
@@ -63,6 +62,11 @@ export const metadata: Metadata = {
 };
 
 function AnalyticsScripts() {
+  // aceita NEXT_PUBLIC_CLARITY_ID ou o nome antigo NEXT_PUBLIC_CLARITY_PROJECT_ID
+  const clarityId =
+    process.env.NEXT_PUBLIC_CLARITY_ID ??
+    process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID;
+
   return (
     <>
       {/* GA4 base */}
@@ -80,6 +84,21 @@ function AnalyticsScripts() {
           gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}', { send_page_view: false });
         `}
       </Script>
+
+      {/* Microsoft Clarity (carregado via script oficial) */}
+      {clarityId ? (
+        <Script
+          id="ms-clarity"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){
+              (c[a].q=c[a].q||[]).push(arguments)};
+              t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+              y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+            })(window, document, "clarity", "script", "${clarityId}");`,
+          }}
+        />
+      ) : null}
     </>
   );
 }
@@ -96,6 +115,7 @@ export default function RootLayout({
     >
       <body className="bg-[#0d0d0d] text-[#f2f2f2] antialiased">
         <AnalyticsScripts />
+
         {/* Componentes com hooks de navegação ficam em Suspense */}
         <Suspense fallback={null}>
           <GA />
@@ -103,10 +123,7 @@ export default function RootLayout({
         <Suspense fallback={null}>
           <Tracker />
         </Suspense>
-        {/* Inicialização do Microsoft Clarity via NPM */}
-        <Suspense fallback={null}>
-          <ClarityInit />
-        </Suspense>
+
         {children}
         <ScrollToTopButton />
       </body>

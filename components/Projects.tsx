@@ -1,11 +1,26 @@
+// components/Projects.tsx
 "use client";
 
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { projects } from "@/lib/projects";
+import { projects as rawProjects } from "@/lib/projects";
 import { Github, ExternalLink } from "lucide-react";
 import { gtagEvent } from "@/lib/gtag";
 import { clarityEvent } from "@/lib/clarity";
+import type { KeyboardEvent } from "react";
+
+// ✅ Tipo local
+type Project = {
+  nome: string;
+  descricao: string;
+  imagem: string;
+  tecnologias: string[];
+  site?: string | null;
+  github?: string | null;
+};
+
+// 🔒 Converte o import para o tipo correto (evita o never[])
+const projects = (rawProjects as unknown as Project[]) ?? [];
 
 function slugify(s: string) {
   return s
@@ -28,8 +43,14 @@ export default function Projects() {
   };
 
   const openProject = (url: string) => {
-    // Abre em nova aba para não perder a sessão/scroll da LP
     window.open(url, "_blank", "noopener,noreferrer");
+  };
+
+  const handleKey = (e: KeyboardEvent<HTMLDivElement>, fn: () => void) => {
+    if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") {
+      e.preventDefault();
+      fn();
+    }
   };
 
   return (
@@ -47,8 +68,9 @@ export default function Projects() {
       <div className="grid md:grid-cols-2 gap-10">
         {projects.map((proj, i) => {
           const slug = slugify(proj.nome);
-          const primaryUrl = proj.site || proj.github; // destino principal do card
-          const destLabel = proj.site ? "Site" : "GitHub";
+          const primaryUrl = proj.site || proj.github || "";
+          const primaryLabel = proj.site ? "Site" : "GitHub";
+          const PrimaryIcon = proj.site ? ExternalLink : Github;
 
           return (
             <motion.div
@@ -60,31 +82,29 @@ export default function Projects() {
               viewport={{ once: true }}
               role={primaryUrl ? "link" : undefined}
               tabIndex={primaryUrl ? 0 : -1}
-              data-track={`projeto_${slug}_card`} // Tracker (Supabase)
+              data-track={`projeto_${slug}_card`}
               onClick={() => {
                 if (!primaryUrl) return;
-                // Tracking: clique no CARD
                 gtagEvent({
                   action: "project_card_click",
                   category: "Projetos",
-                  label: `${proj.nome} - Card (${destLabel})`,
+                  label: `${proj.nome} - Card (${primaryLabel})`,
                 });
                 clarityEvent(`projeto_${slug}_card`);
                 openProject(primaryUrl);
               }}
-              onKeyDown={(e) => {
-                if (!primaryUrl) return;
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
+              onKeyDown={(e) =>
+                handleKey(e, () => {
+                  if (!primaryUrl) return;
                   gtagEvent({
                     action: "project_card_click",
                     category: "Projetos",
-                    label: `${proj.nome} - Card (${destLabel})`,
+                    label: `${proj.nome} - Card (${primaryLabel})`,
                   });
                   clarityEvent(`projeto_${slug}_card`);
                   openProject(primaryUrl);
-                }
-              }}
+                })
+              }
             >
               <Image
                 src={proj.imagem}
@@ -92,6 +112,7 @@ export default function Projects() {
                 width={800}
                 height={450}
                 className="w-full h-52 object-cover"
+                priority={i < 2}
               />
 
               <div className="p-5 flex flex-col gap-3">
@@ -112,15 +133,36 @@ export default function Projects() {
                 </div>
 
                 <div className="flex gap-3 mt-2">
-                  {proj.github && (
+                  {primaryUrl && (
+                    <a
+                      href={primaryUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Abrir ${proj.nome} (${primaryLabel})`}
+                      data-track={`projeto_${slug}_primary`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        track(
+                          `${proj.nome} - ${primaryLabel}`,
+                          `projeto_${slug}_primary`
+                        );
+                      }}
+                      className="text-highlight hover:underline inline-flex items-center gap-1"
+                    >
+                      <PrimaryIcon className="w-4 h-4" />
+                      {proj.site ? "Ver site" : "Ver repositório"}
+                    </a>
+                  )}
+
+                  {proj.site && proj.github && (
                     <a
                       href={proj.github}
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={`Abrir repositório GitHub do projeto ${proj.nome}`}
-                      data-track={`projeto_${slug}_github`} // Tracker
+                      data-track={`projeto_${slug}_github`}
                       onClick={(e) => {
-                        e.stopPropagation(); // evita disparar clique do card
+                        e.stopPropagation();
                         track(
                           `${proj.nome} - GitHub`,
                           `projeto_${slug}_github`
@@ -130,24 +172,6 @@ export default function Projects() {
                     >
                       <Github className="w-4 h-4" />
                       GitHub
-                    </a>
-                  )}
-
-                  {proj.site && (
-                    <a
-                      href={proj.site}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={`Visitar site do projeto ${proj.nome}`}
-                      data-track={`projeto_${slug}_site`} // Tracker
-                      onClick={(e) => {
-                        e.stopPropagation(); // evita disparar clique do card
-                        track(`${proj.nome} - Site`, `projeto_${slug}_site`);
-                      }}
-                      className="text-highlight hover:underline inline-flex items-center gap-1"
-                    >
-                      <ExternalLink className="w-4 h-4" />
-                      Ver site
                     </a>
                   )}
                 </div>
