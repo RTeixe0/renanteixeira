@@ -1,22 +1,19 @@
 import type { Metadata } from "next";
-import Script from "next/script"; // 👈 Adicionado aqui
+import Script from "next/script";
 import "./globals.css";
 import { Inter, Orbitron, JetBrains_Mono } from "next/font/google";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
 
-// Fontes com suporte a variável CSS
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
 });
-
 const orbitron = Orbitron({
   subsets: ["latin"],
   variable: "--font-title",
   display: "swap",
 });
-
 const jetbrains = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
@@ -56,11 +53,42 @@ export const metadata: Metadata = {
       },
     ],
   },
-  icons: {
-    icon: "/favicon.ico",
-  },
+  icons: { icon: "/favicon.ico" },
   manifest: "/site.webmanifest",
 };
+
+function AnalyticsScripts() {
+  return (
+    <>
+      {/* GA4 */}
+      <Script
+        src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
+        strategy="afterInteractive"
+      />
+      <Script id="gtag-init" strategy="afterInteractive">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          window.gtag = gtag;
+          gtag('js', new Date());
+          // send_page_view: false evita duplicar page_view quando usamos roteamento do Next
+          gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}', { send_page_view: false });
+        `}
+      </Script>
+
+      {/* Microsoft Clarity */}
+      <Script id="clarity" strategy="afterInteractive">
+        {`
+          (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+          })(window, document, "clarity", "script", "${process.env.NEXT_PUBLIC_CLARITY_ID}");
+        `}
+      </Script>
+    </>
+  );
+}
 
 export default function RootLayout({
   children,
@@ -73,24 +101,7 @@ export default function RootLayout({
       className={`${inter.variable} ${orbitron.variable} ${jetbrains.variable}`}
     >
       <body className="bg-[#0d0d0d] text-[#f2f2f2] antialiased">
-        {/* Google Analytics Script */}
-        <Script
-          strategy="afterInteractive"
-          src="https://www.googletagmanager.com/gtag/js?id=G-K2J8S6DWC3"
-        />
-        <Script
-          id="gtag-init"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-K2J8S6DWC3');
-            `,
-          }}
-        />
-
+        <AnalyticsScripts />
         {children}
         <ScrollToTopButton />
       </body>
