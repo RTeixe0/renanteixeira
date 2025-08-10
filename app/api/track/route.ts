@@ -5,7 +5,7 @@ import { createClient } from "@supabase/supabase-js";
 export const runtime = "nodejs";
 
 type Payload = {
-  event_type: string; // "page_view" | "click" | "time_spent" | ...
+  event_type: string;
   page?: string;
   referrer?: string;
   element?: string;
@@ -19,14 +19,15 @@ type GeoResponse = {
   city?: string;
   region?: string;
   country_name?: string;
+  country?: string; // código ISO
   latitude?: number;
   longitude?: number;
 };
 
 function isLikelyBot(ua: string) {
-  const bots =
-    /(bot|spider|crawler|preview|facebookexternalhit|headless|pingdom|monitoring|uptime)/i;
-  return bots.test(ua);
+  return /(bot|spider|crawler|preview|facebookexternalhit|headless|pingdom|monitoring|uptime)/i.test(
+    ua
+  );
 }
 
 export async function POST(req: NextRequest) {
@@ -51,29 +52,37 @@ export async function POST(req: NextRequest) {
       req.headers.get("x-real-ip") ||
       "";
 
-    // Geolocalização (evita localhost)
-    let city: string | undefined;
-    let region: string | undefined;
-    let country: string | undefined;
+    // Primeira tentativa: headers da Vercel
+    let city = req.headers.get("x-vercel-ip-city") || undefined;
+    let region_code =
+      req.headers.get("x-vercel-ip-country-region") || undefined;
+    let country_code = req.headers.get("x-vercel-ip-country") || undefined;
+    let country_name: string | undefined;
     let lat: number | undefined;
     let lon: number | undefined;
+    let geo_source: string | undefined;
 
-    try {
-      if (ip && !ip.startsWith("127.") && ip !== "::1") {
+    if (country_code || city) {
+      geo_source = "vercel";
+    } else if (ip && !ip.startsWith("127.") && ip !== "::1") {
+      // Fallback: ipapi
+      try {
         const r = await fetch(`https://ipapi.co/${ip}/json/`, {
           cache: "no-store",
         });
         if (r.ok) {
           const g = (await r.json()) as GeoResponse;
           city = g.city;
-          region = g.region;
-          country = g.country_name;
+          region_code = g.region;
+          country_code = g.country;
+          country_name = g.country_name;
           lat = g.latitude;
           lon = g.longitude;
+          geo_source = "ipapi";
         }
+      } catch {
+        // ignora falha de geo
       }
-    } catch {
-      // ignora falha de geo
     }
 
     const supabase = createClient(
@@ -94,15 +103,17 @@ export async function POST(req: NextRequest) {
       ip: ip || null,
       ua,
       city,
-      region,
-      country,
+      region: region_code, // compat com seu campo atual
+      country: country_name || country_code, // compat com seu campo atual
+      country_code,
+      country_name,
       lat,
       lon,
+      geo_source,
     });
 
     return NextResponse.json({ ok: true });
   } catch (e: unknown) {
-    // narrowing elegante sem any
     let msg = "unknown error";
     if (e instanceof Error) msg = e.message;
     else if (typeof e === "string") msg = e;
