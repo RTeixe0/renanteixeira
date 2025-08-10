@@ -1,8 +1,10 @@
+// app/layout.tsx
 import type { Metadata } from "next";
 import Script from "next/script";
 import "./globals.css";
 import { Inter, Orbitron, JetBrains_Mono } from "next/font/google";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
+import Tracker from "@/components/Tracker"; // 👈 adicionando o tracker
 
 const inter = Inter({
   subsets: ["latin"],
@@ -71,8 +73,8 @@ function AnalyticsScripts() {
           function gtag(){dataLayer.push(arguments);}
           window.gtag = gtag;
           gtag('js', new Date());
-          // send_page_view: false evita duplicar page_view quando usamos roteamento do Next
-          gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}', { send_page_view: false });
+          // Config padrão: envia page_view automático na primeira carga
+          gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}');
         `}
       </Script>
 
@@ -102,6 +104,7 @@ export default function RootLayout({
     >
       <body className="bg-[#0d0d0d] text-[#f2f2f2] antialiased">
         <AnalyticsScripts />
+        <Tracker /> {/* 👈 envia page_view/click/time_spent pra sua API */}
         {children}
         <ScrollToTopButton />
       </body>
