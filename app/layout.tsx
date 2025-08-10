@@ -5,6 +5,7 @@ import "./globals.css";
 import { Inter, Orbitron, JetBrains_Mono } from "next/font/google";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
 import Tracker from "@/components/Tracker";
+import GA from "@/components/GA"; // 👈 componente que dispara page_view nas mudanças de rota
 import { Suspense } from "react";
 
 const inter = Inter({
@@ -63,7 +64,7 @@ export const metadata: Metadata = {
 function AnalyticsScripts() {
   return (
     <>
-      {/* GA4 */}
+      {/* GA4 base */}
       <Script
         src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
         strategy="afterInteractive"
@@ -74,7 +75,8 @@ function AnalyticsScripts() {
           function gtag(){dataLayer.push(arguments);}
           window.gtag = gtag;
           gtag('js', new Date());
-          gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}');
+          // Desliga page_view automático; o GA.tsx envia nas mudanças de rota
+          gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}', { send_page_view: false });
         `}
       </Script>
 
@@ -104,7 +106,10 @@ export default function RootLayout({
     >
       <body className="bg-[#0d0d0d] text-[#f2f2f2] antialiased">
         <AnalyticsScripts />
-        {/* 👇 Envolva qualquer componente que use useSearchParams/usePathname */}
+        {/* Componentes que usam usePathname/useSearchParams devem estar em Suspense */}
+        <Suspense fallback={null}>
+          <GA />
+        </Suspense>
         <Suspense fallback={null}>
           <Tracker />
         </Suspense>

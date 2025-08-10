@@ -2,15 +2,15 @@
 
 import { motion } from "framer-motion";
 import { Github, Linkedin, Mail, MessageCircle } from "lucide-react";
-import { gtagEvent } from "@/lib/gtag"; // 👈 importa a função
+import { gtagEvent } from "@/lib/gtag";
 
 export default function ContactSection() {
-  const handleClick = (channel: string) => {
-    gtagEvent({
-      action: `${channel.toLowerCase()}_click`,
-      category: "Contato",
-      label: `Botão ${channel}`,
-    });
+  const track = (
+    label: string,
+    action = "outbound_click",
+    category = "Contato"
+  ) => {
+    gtagEvent({ action, category, label });
   };
 
   return (
@@ -43,42 +43,58 @@ export default function ContactSection() {
         transition={{ delay: 0.5, duration: 0.6 }}
         viewport={{ once: true }}
       >
+        {/* GitHub */}
         <a
-          onClick={() => handleClick("GitHub")}
           href="https://github.com/RTeixe0"
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="Abrir GitHub"
+          data-track="contato_github"
+          data-clarity-event="contato_github"
+          onClick={() => track("GitHub")}
           className="px-5 py-3 bg-dark border border-highlight text-highlight rounded-xl inline-flex items-center gap-2 hover:bg-highlight hover:text-dark transition"
         >
           <Github className="w-5 h-5" />
           GitHub
         </a>
 
+        {/* LinkedIn */}
         <a
-          onClick={() => handleClick("LinkedIn")}
           href="https://www.linkedin.com/in/renaneteixeira/"
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="Abrir LinkedIn"
+          data-track="contato_linkedin"
+          data-clarity-event="contato_linkedin"
+          onClick={() => track("LinkedIn")}
           className="px-5 py-3 bg-dark border border-highlight text-highlight rounded-xl inline-flex items-center gap-2 hover:bg-highlight hover:text-dark transition"
         >
           <Linkedin className="w-5 h-5" />
           LinkedIn
         </a>
 
+        {/* E-mail */}
         <a
-          onClick={() => handleClick("Email")}
           href="mailto:renanteixeira338@hotmail.com"
+          aria-label="Enviar e-mail"
+          data-track="contato_email"
+          data-clarity-event="contato_email"
+          onClick={() => track("Email", "cta_click")}
           className="px-5 py-3 bg-dark border border-highlight text-highlight rounded-xl inline-flex items-center gap-2 hover:bg-highlight hover:text-dark transition"
         >
           <Mail className="w-5 h-5" />
           Email
         </a>
 
+        {/* WhatsApp */}
         <a
-          onClick={() => handleClick("WhatsApp")}
           href="https://wa.me/5519981286656?text=Olá%20Renan%2C%20vi%20seu%20portfólio%20e%20gostaria%20de%20conversar%20sobre%20um%20projeto."
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="Abrir WhatsApp"
+          data-track="contato_whatsapp"
+          data-clarity-event="contato_whatsapp"
+          onClick={() => track("WhatsApp")}
           className="px-5 py-3 bg-dark border border-highlight text-highlight rounded-xl inline-flex items-center gap-2 hover:bg-highlight hover:text-dark transition"
         >
           <MessageCircle className="w-5 h-5" />

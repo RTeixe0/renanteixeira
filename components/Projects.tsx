@@ -4,8 +4,17 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { projects } from "@/lib/projects";
 import { Github, ExternalLink } from "lucide-react";
+import { gtagEvent } from "@/lib/gtag";
 
 export default function Projects() {
+  const track = (
+    label: string,
+    action = "project_link_click",
+    category = "Projetos"
+  ) => {
+    gtagEvent({ action, category, label });
+  };
+
   return (
     <section id="projetos" className="py-24 px-4 max-w-5xl mx-auto">
       <motion.h2
@@ -38,6 +47,7 @@ export default function Projects() {
             <div className="p-5 flex flex-col gap-3">
               <h3 className="text-xl font-semibold text-light">{proj.nome}</h3>
               <p className="text-light/80 text-sm">{proj.descricao}</p>
+
               <div className="flex flex-wrap gap-2">
                 {proj.tecnologias.map((tech) => (
                   <span
@@ -48,23 +58,41 @@ export default function Projects() {
                   </span>
                 ))}
               </div>
+
               <div className="flex gap-3 mt-2">
                 {proj.github && (
                   <a
                     href={proj.github}
                     target="_blank"
                     rel="noopener noreferrer"
+                    aria-label={`Abrir repositório GitHub do projeto ${proj.nome}`}
+                    data-track={`projeto_${proj.nome
+                      .toLowerCase()
+                      .replace(/\s+/g, "_")}_github`}
+                    data-clarity-event={`projeto_${proj.nome
+                      .toLowerCase()
+                      .replace(/\s+/g, "_")}_github`}
+                    onClick={() => track(`${proj.nome} - GitHub`)}
                     className="text-highlight hover:underline inline-flex items-center gap-1"
                   >
                     <Github className="w-4 h-4" />
                     GitHub
                   </a>
                 )}
+
                 {proj.site && (
                   <a
                     href={proj.site}
                     target="_blank"
                     rel="noopener noreferrer"
+                    aria-label={`Visitar site do projeto ${proj.nome}`}
+                    data-track={`projeto_${proj.nome
+                      .toLowerCase()
+                      .replace(/\s+/g, "_")}_site`}
+                    data-clarity-event={`projeto_${proj.nome
+                      .toLowerCase()
+                      .replace(/\s+/g, "_")}_site`}
+                    onClick={() => track(`${proj.nome} - Site`)}
                     className="text-highlight hover:underline inline-flex items-center gap-1"
                   >
                     <ExternalLink className="w-4 h-4" />

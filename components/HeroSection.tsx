@@ -1,12 +1,17 @@
-'use client'
+"use client";
 
-import { motion } from 'framer-motion'
+import { motion } from "framer-motion";
+import { gtagEvent } from "@/lib/gtag";
 
 export default function HeroSection() {
+  const track = (label: string, category = "Hero", action = "cta_click") => {
+    gtagEvent({ action, category, label });
+  };
+
   return (
     <motion.section
-      initial={{ opacity: 0, filter: 'blur(4px)' }}
-      animate={{ opacity: 1, filter: 'blur(0px)' }}
+      initial={{ opacity: 0, filter: "blur(4px)" }}
+      animate={{ opacity: 1, filter: "blur(0px)" }}
       transition={{ duration: 0.8 }}
       className="min-h-screen flex flex-col justify-center items-center text-center px-4"
     >
@@ -43,17 +48,25 @@ export default function HeroSection() {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.6, duration: 0.5 }}
       >
+        {/* CTA interno */}
         <a
           href="#projetos"
+          data-track="hero_ver_projetos"
+          data-clarity-event="hero_ver_projetos"
+          onClick={() => track("Ver projetos")}
           className="px-6 py-3 rounded-xl bg-highlight text-dark font-semibold hover:scale-105 transition"
         >
           Ver projetos
         </a>
 
+        {/* GitHub externo */}
         <a
           href="https://github.com/RTeixe0"
           target="_blank"
           rel="noopener noreferrer"
+          data-track="hero_github"
+          data-clarity-event="hero_github"
+          onClick={() => track("GitHub", "Hero", "outbound_click")}
           className="px-6 py-3 rounded-xl border border-highlight text-highlight hover:bg-highlight hover:text-dark transition inline-flex items-center gap-2"
         >
           <svg
@@ -61,6 +74,7 @@ export default function HeroSection() {
             fill="currentColor"
             viewBox="0 0 24 24"
             className="w-5 h-5"
+            aria-hidden="true"
           >
             <path
               fillRule="evenodd"
@@ -80,10 +94,14 @@ export default function HeroSection() {
           GitHub
         </a>
 
+        {/* LinkedIn externo */}
         <a
           href="https://www.linkedin.com/in/renaneteixeira/"
           target="_blank"
           rel="noopener noreferrer"
+          data-track="hero_linkedin"
+          data-clarity-event="hero_linkedin"
+          onClick={() => track("LinkedIn", "Hero", "outbound_click")}
           className="px-6 py-3 rounded-xl border border-highlight text-highlight hover:bg-highlight hover:text-dark transition inline-flex items-center gap-2"
         >
           <svg
@@ -91,6 +109,7 @@ export default function HeroSection() {
             fill="currentColor"
             viewBox="0 0 24 24"
             className="w-5 h-5"
+            aria-hidden="true"
           >
             <path
               d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 
@@ -106,5 +125,5 @@ export default function HeroSection() {
         </a>
       </motion.div>
     </motion.section>
-  )
+  );
 }
