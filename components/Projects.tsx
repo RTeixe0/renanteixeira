@@ -18,6 +18,11 @@ export default function Projects() {
         Projetos em Destaque
       </motion.h2>
 
+      <p className="text-light/80 text-center mb-12">
+        Aqui estão alguns dos meus projetos mais recentes, onde você pode ver
+        minhas habilidades em ação.
+      </p>
+
       <div className="grid md:grid-cols-2 gap-10">
         {projects.map((proj, i) => (
           <motion.div
