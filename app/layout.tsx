@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Inter, Orbitron, JetBrains_Mono } from "next/font/google";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
+import Script from "next/script"; // Import do Next.js
 
-// Fontes com suporte a variável CSS
+// Fontes
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
@@ -71,6 +72,21 @@ export default function RootLayout({
       lang="pt-BR"
       className={`${inter.variable} ${orbitron.variable} ${jetbrains.variable}`}
     >
+      <head>
+        {/* Script GA4 */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-KZB5WD7JJ3"
+          strategy="afterInteractive"
+        />
+        <Script id="ga4-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-KZB5WD7JJ3');
+          `}
+        </Script>
+      </head>
       <body className="bg-[#0d0d0d] text-[#f2f2f2] antialiased">
         {children}
         <ScrollToTopButton />
