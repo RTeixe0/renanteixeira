@@ -1,28 +1,347 @@
-@import "tailwindcss";
-
-@theme {
-  --font-sans: "Inter", sans-serif;
-  --font-title: "Orbitron", sans-serif;
-  --font-mono: "JetBrains Mono", monospace;
-
-  --color-dark: #0d0d0d;
-  --color-darker: #121212;
-  --color-light: #f2f2f2;
-  --color-highlight: #f97316;
-
-  --radius-xl: 1rem;
-  --radius-2xl: 1.5rem;
+:root {
+  --background: #030406;
+  --foreground: #f5f8ff;
+  --cyan: #68ecff;
+  --blue: #4e68ff;
+  --violet: #a56cff;
 }
 
-@layer base {
-  html {
-    scroll-behavior: smooth;
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  min-width: 320px;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: var(--background);
+}
+
+body {
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+::selection {
+  color: #020508;
+  background: var(--cyan);
+}
+
+.signature-stage {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  width: 100%;
+  height: 100svh;
+  place-items: center;
+  overflow: hidden;
+  background: #030406;
+}
+
+.shader-canvas,
+.particle-canvas,
+.grid,
+.grain,
+.vignette,
+.aurora {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.shader-canvas {
+  z-index: -7;
+  background:
+    radial-gradient(circle at 65% 35%, rgba(30, 69, 130, 0.48), transparent 42%),
+    #030406;
+}
+
+.particle-canvas {
+  z-index: -4;
+  opacity: 0.8;
+}
+
+.aurora {
+  z-index: -6;
+  filter: blur(90px);
+  opacity: 0.2;
+  mix-blend-mode: screen;
+}
+
+.aurora-a {
+  background: radial-gradient(circle, rgba(35, 164, 255, 0.7), transparent 64%);
+  transform: translate(-28%, -20%) scale(0.85);
+  animation: aurora-a 17s ease-in-out infinite alternate;
+}
+
+.aurora-b {
+  background: radial-gradient(circle, rgba(148, 74, 255, 0.62), transparent 63%);
+  transform: translate(38%, 24%) scale(0.74);
+  animation: aurora-b 21s ease-in-out infinite alternate;
+}
+
+.grid {
+  z-index: -3;
+  opacity: 0.12;
+  background-image:
+    linear-gradient(rgba(115, 217, 255, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(115, 217, 255, 0.12) 1px, transparent 1px);
+  background-size: clamp(52px, 6vw, 96px) clamp(52px, 6vw, 96px);
+  mask-image: radial-gradient(circle at center, black 2%, transparent 72%);
+  transform: perspective(700px) rotateX(66deg) translateY(39%) scale(1.5);
+  transform-origin: center bottom;
+  animation: grid-drift 14s linear infinite;
+}
+
+.grain {
+  z-index: 7;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.9'/%3E%3C/svg%3E");
+  animation: noise 0.22s steps(2) infinite;
+}
+
+.vignette {
+  z-index: 6;
+  box-shadow:
+    inset 0 0 15vw rgba(0, 0, 0, 0.82),
+    inset 0 0 4vw rgba(0, 0, 0, 0.48);
+}
+
+.name-shell {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  width: min(92vw, 1500px);
+  place-items: center;
+  perspective: 1300px;
+}
+
+.name-shell::before,
+.name-shell::after {
+  position: absolute;
+  left: 50%;
+  width: min(78vw, 1120px);
+  height: 1px;
+  content: "";
+  background: linear-gradient(90deg, transparent, rgba(118, 225, 255, 0.5), transparent);
+  transform: translateX(-50%) scaleX(0);
+  animation: line-reveal 1.6s 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.name-shell::before {
+  top: -clamp(36px, 6vh, 70px);
+}
+
+.name-shell::after {
+  bottom: -clamp(36px, 6vh, 70px);
+}
+
+.name {
+  --rx: 0deg;
+  --ry: 0deg;
+  --mx: 0px;
+  --my: 0px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+  line-height: 0.76;
+  letter-spacing: -0.075em;
+  text-align: center;
+  transform:
+    translate3d(var(--mx), var(--my), 0)
+    rotateX(var(--rx))
+    rotateY(var(--ry));
+  transform-style: preserve-3d;
+  transition: transform 650ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.name::before,
+.name::after {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  content: attr(data-text);
+  font-size: clamp(3rem, 11vw, 10.8rem);
+  font-weight: 900;
+  line-height: 0.78;
+  letter-spacing: -0.075em;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.name::before {
+  color: var(--cyan);
+  transform: translate3d(-4px, 0, 35px);
+  animation: spectral-glitch 8s 2.7s steps(1) infinite;
+  clip-path: inset(12% 0 62% 0);
+}
+
+.name::after {
+  color: var(--violet);
+  transform: translate3d(4px, 0, 30px);
+  animation: spectral-glitch 8s 2.76s steps(1) infinite reverse;
+  clip-path: inset(64% 0 10% 0);
+}
+
+.name-line {
+  position: relative;
+  display: block;
+  font-size: clamp(4rem, 16.4vw, 15rem);
+  font-weight: 900;
+  white-space: nowrap;
+  transform: translateY(1.05em);
+  opacity: 0;
+  filter: blur(15px);
+  animation: name-rise 1.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.name-line-primary {
+  color: transparent;
+  background:
+    linear-gradient(112deg, #ffffff 5%, #b9f6ff 31%, #ffffff 48%, #7795ff 78%, #ffffff 96%);
+  background-size: 230% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  text-shadow:
+    0 0 22px rgba(120, 228, 255, 0.09),
+    0 0 80px rgba(47, 120, 255, 0.12);
+  animation-delay: 0.18s;
+  animation-name: name-rise, text-shine;
+  animation-duration: 1.65s, 7s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1), linear;
+  animation-fill-mode: forwards, none;
+  animation-iteration-count: 1, infinite;
+}
+
+.name-line-secondary {
+  margin-top: 0.16em;
+  color: transparent;
+  -webkit-text-stroke: clamp(1px, 0.12vw, 2px) rgba(226, 245, 255, 0.84);
+  text-shadow:
+    0 0 28px rgba(91, 215, 255, 0.12),
+    0 0 90px rgba(105, 73, 255, 0.1);
+  animation-delay: 0.36s;
+}
+
+.name-line-secondary::before {
+  position: absolute;
+  inset: 0;
+  content: "TEIXEIRA";
+  color: transparent;
+  background: linear-gradient(90deg, transparent 4%, rgba(145, 244, 255, 0.76), transparent 34%);
+  background-size: 250% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-stroke: 0 transparent;
+  opacity: 0.55;
+  animation: outline-scan 5.4s 2.1s ease-in-out infinite;
+}
+
+@keyframes name-rise {
+  0% {
+    transform: translateY(1.05em) scaleY(1.22);
+    opacity: 0;
+    filter: blur(15px);
+  }
+  62% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) scaleY(1);
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+@keyframes text-shine {
+  0% { background-position: 180% 0; }
+  100% { background-position: -50% 0; }
+}
+
+@keyframes outline-scan {
+  0%, 14% { background-position: 180% 0; opacity: 0; }
+  36% { opacity: 0.74; }
+  64%, 100% { background-position: -80% 0; opacity: 0; }
+}
+
+@keyframes line-reveal {
+  to { transform: translateX(-50%) scaleX(1); }
+}
+
+@keyframes spectral-glitch {
+  0%, 88%, 100% { opacity: 0; }
+  89% { opacity: 0.68; transform: translate3d(-7px, 0, 35px); }
+  90% { opacity: 0; }
+  92% { opacity: 0.48; transform: translate3d(8px, 0, 35px); }
+  93% { opacity: 0; }
+}
+
+@keyframes aurora-a {
+  to { transform: translate(-10%, -5%) scale(1.1) rotate(18deg); }
+}
+
+@keyframes aurora-b {
+  to { transform: translate(18%, 10%) scale(0.96) rotate(-15deg); }
+}
+
+@keyframes grid-drift {
+  to { background-position: 0 96px, 96px 0; }
+}
+
+@keyframes noise {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-2%, 1%); }
+  50% { transform: translate(1%, -2%); }
+  75% { transform: translate(2%, 2%); }
+  100% { transform: translate(-1%, 1%); }
+}
+
+@media (max-width: 720px) {
+  .name {
+    line-height: 0.82;
   }
 
-  body {
-    @apply antialiased;
-    font-family: var(--font-sans);
-    background-color: var(--color-dark);
-    color: var(--color-light);
+  .name-line {
+    font-size: clamp(3.8rem, 20vw, 8rem);
+    letter-spacing: -0.07em;
+  }
+
+  .name-line-secondary {
+    margin-top: 0.2em;
+  }
+
+  .grid {
+    opacity: 0.09;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .name-line {
+    transform: none;
+    opacity: 1;
+    filter: none;
   }
 }
